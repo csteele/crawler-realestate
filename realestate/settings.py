@@ -29,12 +29,14 @@ NEWSPIDER_MODULE = 'realestate.spiders'
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 3
 DEPTH_LIMIT=20
+RETRY_TIMES=1
+DOWNLOAD_TIMEOUT=60
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+# COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -53,10 +55,10 @@ COOKIES_ENABLED = False
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-    'realestate.middleware.CustomHttpProxyMiddleware': 543,
-    'realestate.middleware.CustomUserAgentMiddleware': 545,
-}
+#DOWNLOADER_MIDDLEWARES = {
+#    'realestate.middleware.CustomHttpProxyMiddleware': 543,
+#    'realestate.middleware.CustomUserAgentMiddleware': 545,
+#}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
