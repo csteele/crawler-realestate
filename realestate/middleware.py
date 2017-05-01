@@ -17,7 +17,9 @@ class CustomHttpProxyMiddleware(object):
     def process_request(self, request, spider):
         print('start %i' % len(self.proxies))
         if request.meta.get('proxy',0)!= 0:
-            self.currentProxy = request.meta.get('proxy')
+            currentProxyString = request.meta.get('proxy')
+            currentProxyString=currentProxyString.replace('http://','')
+            self.currentProxy={'ip_port':currentProxyString}
         else:
             if self.change_proxy(request):
                 self.currentProxy = random.choice(self.proxies)
@@ -25,10 +27,10 @@ class CustomHttpProxyMiddleware(object):
             print(self.currentProxy)
             request.meta['proxy'] = "http://%s" % self.currentProxy['ip_port']
         except Exception as e:
-            spider.logger.info("Exception {0}".format(e))
+            spider.logger.info("Exception {0}".format(str(e)))
 
     def process_response(self, request, response, spider):
-        if response.status!=200:
+        if response.status==407:
             r = request.meta
             proxy=r['proxy']
             try:

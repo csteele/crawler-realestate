@@ -2,12 +2,14 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from realestate.items import RealestateItem
 from datetime import date
+import pickle
 
+LOCATION_PICKLE_PATH='../data/locations.p'
+BASE_URL = "http://www.realestate.com.au/buy/in-"
 
 class RealestateSpider(CrawlSpider):
     name = 'RealestateSpider'
-    allowed_domains = ['m.realestate.com.au','realestate.com.au','www.realestate.com.au','http://www.realestate.com.au']
-    start_urls = ["http://www.realestate.com.au/buy/in-beenleigh+qld+4207/list-1"]
+    allowed_domains = ['realestate.com.au','www.realestate.com.au','http://www.realestate.com.au']
     rules = [
         Rule(LinkExtractor(restrict_xpaths='//link[@rel="next"]',tags='link'),callback='parse_items',follow=True),
     ]
@@ -23,6 +25,10 @@ class RealestateSpider(CrawlSpider):
             'realestate.middleware.CustomUserAgentMiddleware': 545,
         }
     }
+
+    def __init__(self):
+        super().__init__()
+        self.start_urls=self.get_start_urls(LOCATION_PICKLE_PATH,BASE_URL)
 
     def parse_items(self, response):
         """
@@ -40,3 +46,18 @@ class RealestateSpider(CrawlSpider):
             item['bathrooms'] = sel.xpath('.//dd[2]/text()').extract()
             item['cars'] = sel.xpath('.//dd[3]/text()').extract()
             yield item
+
+    def get_start_urls(self,pickle_path,base_url):
+        with open(pickle_path,"rb") as file:
+            locations = pickle.load(file)
+            start_urls = []
+            for location in locations:
+                url = base_url + str(location) + '-qld/list-1'
+                start_urls.append(url)
+                print(url)
+            return start_urls
+
+
+
+
+

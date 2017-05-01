@@ -17,8 +17,7 @@ class ProxySpider(Spider):
 	}
 
 	def start_requests(self):
-		urls = ['http://www.us-proxy.org']
-		        #'http://www.free-proxy-list.net/uk-proxy.html', 'http://www.socks-proxy.net/']
+		urls = ['http://www.us-proxy.org', 'http://www.free-proxy-list.net/uk-proxy.html', 'http://www.socks-proxy.net/']
 		for url in urls:
 			yield Request(url=url, callback=self.parse)
 
@@ -28,6 +27,7 @@ class ProxySpider(Spider):
 			item = ProxyItem()
 			item['ip'] = sel.xpath('.//td[1]//text()').extract_first()
 			item['port'] = sel.xpath('.//td[2]/text()').extract_first()
+			item['type'] = sel.xpath('.//td[5]/text()').extract_first()
 			item['speed'] = ''
 			item['lastcheck'] = ''
 			yield item

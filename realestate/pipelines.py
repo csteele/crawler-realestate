@@ -40,13 +40,16 @@ class ProxyPipeline(object):
         file.close()
 
     def process_item(self, item, spider):
-        elapsed=0
+        if item['type'] == 'transparent':
+            raise DropItem("Transparent Proxy Dropped")
         try:
             socket="http://{0}:{1}".format(item['ip'],item['port'])
             proxyDict = {"http":socket}
             response = rq.get('http://www.google.com',proxies=proxyDict,timeout=2)
             elapsed = response.elapsed
             spider.logger.info('Socket{0}\tElapsed{1}'.format(socket,elapsed))
+            if not ( 200 <= response.status_code < 300):
+                raise DropItem("Not valid respose")
             if elapsed>timedelta(seconds=5):
                 raise DropItem("Slow connection")
         except Exception as e:
