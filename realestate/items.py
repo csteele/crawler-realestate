@@ -16,6 +16,9 @@ class RealestateItem(Item):
 	bedrooms = Field()
 	bathrooms = Field()
 	cars = Field()
+	type = Field()
+	subtype = Field()
+	price = Field()
 
 
 class ProxyItem(Item):

@@ -10,10 +10,36 @@ from scrapy.exceptions import DropItem
 from scrapy.exporters import PickleItemExporter
 import requests as rq
 from datetime import date,timedelta
+import string, re
 
 class RealestatePipeline(object):
+
+    def __init__(self):
+        self.PROPERTY_TYPES = ['property', 'project']
+        self.PROPERTY_SUBTYPES = ['townhouse', 'unitblock', 'house', 'unit', 'apartment', 'residential+land', 'acerage',
+                                  'livestock']
+
     def process_item(self, item, spider):
-        return item
+	    item['date'] = date.today()
+	    url = item['url']
+	    if (url != None):
+		    for types in self.PROPERTY_TYPES:
+			    if types in url:
+				    item["type"] = types
+				    break
+		    for types in self.PROPERTY_SUBTYPES:
+			    if types in url:
+				    item["subtype"] = types
+				    break
+	    priceText = item['priceText']
+	    if (priceText != None):
+		    index = priceText.find("$")
+		    if (index != -1):
+			    sub = priceText[index:]
+			    allow = string.digits + "$\-,"
+			    sub = re.sub('[^%s]' % allow, '', sub)
+			    item["price"] = sub
+	    return item
 
 
 class ProxyPipeline(object):
@@ -29,7 +55,7 @@ class ProxyPipeline(object):
          return pipeline
 
     def spider_opened(self, spider):
-        file = open('%s_items.p' % spider.name, 'w+b')
+        file = open('data/%s_Items.p' % spider.name, 'w+b')
         self.files[spider] = file
         self.exporter = PickleItemExporter(file)
         self.exporter.start_exporting()
